@@ -1,4 +1,6 @@
-# Exercise 0.4: New note diagram
+# Part 0
+
+## Exercise 0.4: New note
 
 ```mermaid
 sequenceDiagram
@@ -35,9 +37,42 @@ sequenceDiagram
 
   browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
   activate server
-  server->>browser: HTTP 200: OK <br> body:[...,{"content":"Hello World","date":"2025-01-31"}]
+  server->>browser: HTTP 200: OK <br> [...,{"content":"Hello World","date":"2025-01-31"}]
   deactivate server
 
   Note right of browser: browser renders notes by executing callback function
+
+```
+
+## Exercise 0.5: Single Page App
+
+```mermaid
+sequenceDiagram
+  participant browser
+  participant server
+
+  browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa
+  activate server
+  server->>browser: HTTP 200: OK <br> HTML document: spa
+  deactivate server
+
+  browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
+  activate server
+  server->>browser: HTTP 200: OK <br> CSS file: main.css
+  deactivate server
+
+  browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/spa.js
+  activate server
+  server->>browser: HTTP 200: OK <br> JS file: spa.js
+  deactivate server
+
+  Note right of browser: The browser load data.json from the server by execute JavaScript code from spa.js
+
+  browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
+  activate server
+  server->>browser: HTTP 200: OK <br> [...the note objects...]
+  deactivate server
+
+  Note right of browser: The browser execute callback function to rendering the notes
 
 ```
