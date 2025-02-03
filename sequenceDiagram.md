@@ -4,7 +4,7 @@
 
 ```mermaid
 sequenceDiagram
-  participant user
+  actor user
   participant browser
   participant server
 
@@ -74,5 +74,27 @@ sequenceDiagram
   deactivate server
 
   Note right of browser: The browser execute callback function to rendering the notes
+
+```
+
+## Exercise 0.6: SPA New note
+
+```mermaid
+sequenceDiagram
+  actor user
+  participant browser
+  participant server
+
+  user->>browser: Input text to the HTML input field
+  
+  user->>browser: Click the save button
+  Note right of browser: The browser execute callback function
+
+  browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+  activate server
+  server->>browser: HTTP 201: Created <br> body:{ "message" : "note created" } <br> payload:{"content":"Hello again","date":"2025-02-02"}
+  deactivate server
+
+  Note right of browser: The browser execute callback function, add a new vote to end of local array and render the notes
 
 ```
