@@ -1,5 +1,8 @@
 import { useState } from 'react'
 
+const average = ({ good, bad, total }) => (good - bad) / total
+const positives = ({ good, total }) => good / total * 100
+
 const Button = ({ onClick, text }) => (
   <button onClick={onClick}>
     {text}
@@ -8,16 +11,38 @@ const Button = ({ onClick, text }) => (
 
 const Header = ({ text }) => <h1>{text}</h1>
 
-const Display = ({ text, value }) => <div>{text} {value}</div>
+const StatisticLine = ({ text, value }) => <div>{text} {value}</div>
+
+const Statics = ({ good, neutral, bad, total }) => (
+  <div>
+    <Header text='statics' />
+    <StatisticLine text='good' value={good} />
+    <StatisticLine text='neutral' value={neutral} />
+    <StatisticLine text='bad' value={bad} />
+    <StatisticLine text='all' value={total} />
+    <StatisticLine text='average' value={average({ good, bad, total })} />
+    <StatisticLine text='positives' value={positives({ good, total })} />
+  </div>
+)
 
 const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+  const [total, setTotal] = useState(0)
 
-  const handleGoodClick = () => setGood(good + 1)
-  const handleNeutralClick = () => setNeutral(neutral + 1)
-  const handleBadClick = () => setBad(bad + 1)
+  const handleGoodClick = () => {
+    setGood(good + 1)
+    setTotal(total + 1)
+  }
+  const handleNeutralClick = () => {
+    setNeutral(neutral + 1)
+    setTotal(total + 1)
+  }
+  const handleBadClick = () => {
+    setBad(bad + 1)
+    setTotal(total + 1)
+  }
 
   return (
     <div>
@@ -32,14 +57,14 @@ const App = () => {
       />
       <Button
         onClick={handleBadClick}
-        text='Negative'
+        text='Bad'
       />
-      <Header
-        text='statics'
+      <Statics
+        good={good}
+        bad={bad}
+        neutral={neutral}
+        total={total}
       />
-      <Display text='good' value={good}/>
-      <Display text='neutral' value={neutral}/>
-      <Display text='bad' value={bad}/>
     </div>
   )
 }
