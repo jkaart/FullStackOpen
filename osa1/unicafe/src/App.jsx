@@ -11,19 +11,43 @@ const Button = ({ onClick, text }) => (
 
 const Header = ({ text }) => <h1>{text}</h1>
 
-const StatisticLine = ({ text, value }) => <div>{text} {value}</div>
+const StatisticLine = ({ text, value }) => <tr><td>{text}</td><td>{value}</td></tr>
 
-const Statics = ({ good, neutral, bad, total }) => (
-  <div>
-    <Header text='statics' />
-    <StatisticLine text='good' value={good} />
-    <StatisticLine text='neutral' value={neutral} />
-    <StatisticLine text='bad' value={bad} />
-    <StatisticLine text='all' value={total} />
-    <StatisticLine text='average' value={average({ good, bad, total })} />
-    <StatisticLine text='positives' value={positives({ good, total })} />
-  </div>
+const Table = ({ values }) => (
+  <table>
+    <tbody>
+      <StatisticLine text={values[0].text} value={values[0].value} />
+      <StatisticLine text={values[1].text} value={values[1].value} />
+      <StatisticLine text={values[2].text} value={values[2].value} />
+      <StatisticLine text={values[3].text} value={values[3].value} />
+      <StatisticLine text={values[4].text} value={values[4].value} />
+      <StatisticLine text={values[5].text} value={values[5].value} />
+    </tbody>
+  </table>
 )
+
+const Statics = ({ good, neutral, bad, total }) => {
+  const values = [
+    { value: good, text: 'good' },
+    { value: neutral, text: 'neutral' },
+    { value: bad, text: 'bad' },
+    { value: total, text: 'all' },
+    { value: average({ good, bad, total }), text: 'average' },
+    { value: positives({ good, total }) + ' %', text: 'positive' },
+  ]
+  if (total) {
+    return (
+      <div>
+        <Table values={values} />
+      </div>
+    )
+  }
+  return (
+    <div>
+      <p>No feedback given</p>
+    </div>
+  )
+}
 
 const App = () => {
   const [good, setGood] = useState(0)
@@ -59,6 +83,7 @@ const App = () => {
         onClick={handleBadClick}
         text='Bad'
       />
+      <Header text='statics' />
       <Statics
         good={good}
         bad={bad}
