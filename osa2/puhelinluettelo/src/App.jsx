@@ -1,20 +1,32 @@
 import { useEffect, useState } from 'react'
-import axios from 'axios'
 import Filter from './components/Filter'
 import PersonForm from './components/PersonForm'
 import Persons from './components/Persons'
+import Notification from './components/Notification'
+import personService from './services/persons'
 
 const App = () => {
   const [persons, setPersons] = useState([])
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filter, setFilter] = useState('')
+  const [notificationMessage, setNotificationMessage] = useState(null)
+  const [notificationType, setNotificationType] = useState(null)
+
+  const showNotification = ({ message, type }) => {
+    setNotificationMessage(message)
+    setNotificationType(type)
+    setTimeout(() => {
+      setNotificationMessage(null)
+      setNotificationType(null)
+    }, 5000)
+  }
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
+    personService
+      .getAll()
       .then(response => {
-        setPersons(response.data)
+        setPersons(response)
       })
   }, [])
 
@@ -29,28 +41,59 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
 
-    const result = persons.some((person) => person.name === newName)
-    if (!result) {
+    const foundPerson = persons.find(person => person.name === newName)
+    if (!foundPerson) {
       const personObject = {
         name: newName,
         number: newNumber
       }
-      axios
-        .post('http://localhost:3001/persons', personObject)
+      personService
+        .create(personObject)
         .then(response => {
-          setPersons(persons.concat(response.data))
+          setPersons(persons.concat(response))
+          showNotification({ message: `${response.name} added successfully`, type: 'info' })
         })
     }
     else {
-      alert(`${newName} is already added to phonebook`)
+      const result = confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)
+      if (result) {
+        const personObject = {
+          id: foundPerson.id,
+          name: foundPerson.name,
+          number: newNumber,
+        }
+        personService
+          .replace(personObject)
+          .then(response => {
+            setPersons(persons.map(person => person.id !== response.id ? person : response))
+            showNotification({ message: `${response.name} number replaced successfully`, type: 'info' })
+          })
+      }
     }
     setNewName('')
     setNewNumber('')
   }
 
+  const removePerson = ({ id, name }) => {
+    const result = window.confirm(`Delete ${name} ?`)
+    if (result) {
+      personService
+        .remove(id)
+        .then(() => {
+          setPersons(persons.filter(person => person.id !== id))
+          showNotification({ message: `${name} added successfully`, type: 'info' })
+        })
+        .catch(() => {
+          showNotification({ message: `${name} already deleted`, type: 'error' })
+        })
+    }
+  }
+
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={notificationMessage} type={notificationType} />
 
       <Filter value={filter} onChange={handleFilterChange} />
 
@@ -63,7 +106,7 @@ const App = () => {
         numberOnChange={handleNumberChange}
       />
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} deleteOnClick={removePerson} />
     </div>
   )
 }
