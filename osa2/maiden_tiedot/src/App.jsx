@@ -21,7 +21,10 @@ const App = () => {
     setFind(event.target.value)
     setCountry(null)
   }
-  const handleShowInfo = (country) => setCountry(country)
+
+  const handleShowInfo = ({ country }) => {
+    setCountry(country)
+  }
 
   const filteredCountries = !find
     ? countries
