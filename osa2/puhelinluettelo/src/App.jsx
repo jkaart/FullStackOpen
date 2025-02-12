@@ -81,7 +81,7 @@ const App = () => {
         .remove(id)
         .then(() => {
           setPersons(persons.filter(person => person.id !== id))
-          showNotification({ message: `${name} added successfully`, type: 'info' })
+          showNotification({ message: `${name} deleted successfully`, type: 'info' })
         })
         .catch(() => {
           showNotification({ message: `${name} already deleted`, type: 'error' })
