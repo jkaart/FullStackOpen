@@ -50,9 +50,12 @@ const App = () => {
       personService
         .create(personObject)
         .then(response => {
-          console.log('res', response)
           setPersons(persons.concat(response))
           showNotification({ message: `${response.name} added successfully`, type: 'info' })
+        })
+        .catch(error => {
+          console.log(error.response.data)
+          showNotification({ message: error.response.data.error, type: 'error' })
         })
     }
     else {
@@ -68,6 +71,10 @@ const App = () => {
           .then(response => {
             setPersons(persons.map(person => person.id !== response.id ? person : response))
             showNotification({ message: `${response.name} number replaced successfully`, type: 'info' })
+          })
+          .catch(error => {
+            console.log(error)
+            showNotification({ message: error.response.data.error, type: 'error' })
           })
       }
     }
@@ -89,7 +96,6 @@ const App = () => {
         })
     }
   }
-
 
   return (
     <div>
