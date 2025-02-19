@@ -39,6 +39,8 @@ const initialBlogs = [
   }
 ]
 
+const singleBlog = { ...initialBlogs[0] }
+
 const dummy = (blogs) => {
   return 1
 }
@@ -78,5 +80,6 @@ module.exports = {
   favoriteBlog,
   mostBlogs,
   mostLikes,
-  initialBlogs
+  initialBlogs,
+  singleBlog,
 }

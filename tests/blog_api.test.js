@@ -9,7 +9,7 @@ const { title } = require('node:process')
 
 const api = supertest(app)
 
-describe('API tests', () => {
+describe('API tests', async () => {
   beforeEach(async () => {
     await Blog.deleteMany({})
     await Blog.insertMany(listHelper.initialBlogs)
@@ -34,33 +34,63 @@ describe('API tests', () => {
       assert.strictEqual(Object.keys(blog).includes('id'), true)
     })
   })
+  describe('adding new blog', async () => {
+    test('New Blog adding succeeds', async () => {
+      const newBlog = { ...listHelper.singleBlog }
 
-  test('can add blog to the db', async () => {
-    const newBlog = {
-      title: 'Test blog',
-      author: 'Test Tester',
-      url: 'http://testblog.org',
-      likes: 5,
-    }
+      const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
 
-    const response = await api
-      .post('/api/blogs')
-      .send(newBlog)
-      .expect(201)
-      .expect('Content-Type', /application\/json/)
+      const allBlogs = await Blog.find({})
+      const result = await Blog.findById(response.body.id)
 
-    const allBlogs = await Blog.find({})
-    const result = await Blog.findById(response.body.id)
-    const savedBlog = {
-      title: result.title,
-      author: result.author,
-      url: result.url,
-      likes: result.likes,
-      id: result.id
-    }
-    
-    assert.strictEqual(allBlogs.length, listHelper.initialBlogs.length + 1)
-    assert.deepStrictEqual(savedBlog, { ...newBlog, id: response.body.id })
+      const savedBlog = {
+        title: result.title,
+        author: result.author,
+        url: result.url,
+        likes: result.likes,
+        id: result.id
+      }
+
+      assert.strictEqual(allBlogs.length, listHelper.initialBlogs.length + 1)
+      assert.deepStrictEqual(savedBlog, { ...newBlog, id: response.body.id })
+    })
+
+    test('success if likes is undefined set it to zero', async () => {
+      const newBlog = { ...listHelper.singleBlog }
+      delete newBlog.likes
+
+      const response = await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      assert.strictEqual(response.body.likes, 0)
+    })
+
+    test('failing with status 400 if title is undefined', async () => {
+      const newBlog = { ...listHelper.singleBlog }
+      delete newBlog.title
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
+
+    test('failing with status 400 if url is undefined', async () => {
+      const newBlog = { ...listHelper.singleBlog }
+      delete newBlog.url
+
+      await api
+        .post('/api/blogs')
+        .send(newBlog)
+        .expect(400)
+    })
   })
 
   after(async () => {
