@@ -93,6 +93,33 @@ describe('API tests', async () => {
     })
   })
 
+  describe('delete single blog', async () => {
+    test('success with status 204 if blog deleted', async () => {
+      const newBlog = { ...listHelper.singleBlog }
+
+      const blog = new Blog(newBlog)
+      const savedBlog = await blog.save()
+
+      await api
+        .delete(`/api/blogs/${savedBlog.id}`)
+        .expect(204)
+    })
+
+    test('fails if id is not valid', async () => {
+      const newBlog = { ...listHelper.singleBlog }
+
+      const blog = new Blog(newBlog)
+      const savedBlog = await blog.save()
+
+      await Blog.findByIdAndDelete(savedBlog.id)
+
+      await api
+        .delete(`/api/blogs/${savedBlog.id}`)
+        .expect(404)
+
+    })
+  })
+
   after(async () => {
     await mongoose.connection.close()
   })
