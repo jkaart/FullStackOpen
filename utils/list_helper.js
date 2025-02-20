@@ -1,4 +1,5 @@
 const _ = require('lodash')
+const Blog = require('../models/blog')
 
 const initialBlogs = [
   {
@@ -74,6 +75,21 @@ const mostLikes = (blogs) => {
   return { author, likes: likesSum[author] }
 }
 
+const initSingleBlog = async () => {
+  const newBlog = { ...singleBlog }
+  const blog = new Blog(newBlog)
+
+  const savedBlog = await blog.save()
+  
+  return {
+    id: savedBlog.id,
+    title: savedBlog.title,
+    author: savedBlog.author,
+    url: savedBlog.url,
+    likes: savedBlog.likes
+  }
+}
+
 module.exports = {
   dummy,
   totalLikes,
@@ -82,4 +98,5 @@ module.exports = {
   mostLikes,
   initialBlogs,
   singleBlog,
+  initSingleBlog,
 }

@@ -119,6 +119,31 @@ describe('API tests', async () => {
 
     })
   })
+  describe('edit blog', async () => {
+    test('success increase likes by 1', async () => {
+      const savedBlog = await listHelper.initSingleBlog()
+      let { title, author, url, likes } = savedBlog
+
+      await api
+        .put(`/api/blogs/${savedBlog.id}`)
+        .send({ title, author, url, likes: likes += 1 })
+        .expect(201)
+        .expect('Content-Type', /application\/json/)
+
+      const editedBlog = await Blog.findById(savedBlog.id)
+      assert.strictEqual(editedBlog.likes, savedBlog.likes + 1)
+    })
+
+    test('failing if likes is undefined', async () => {
+      const savedBlog = await listHelper.initSingleBlog()
+      delete savedBlog.likes
+
+      await api
+        .put(`/api/blogs/${savedBlog.id}`)
+        .send(savedBlog)
+        .expect(400)
+    })
+  })
 
   after(async () => {
     await mongoose.connection.close()
