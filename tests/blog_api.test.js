@@ -5,37 +5,39 @@ const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
 const listHelper = require('../utils/list_helper')
-const { title } = require('node:process')
 
 const api = supertest(app)
 
 describe('API tests', async () => {
-  beforeEach(async () => {
-    await Blog.deleteMany({})
-    await Blog.insertMany(listHelper.initialBlogs)
-  })
+  describe('for multiple blog init', async () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({})
+      await Blog.insertMany(listHelper.initialBlogs)
+    })
 
-  test('blogs are returned as JSON', async () => {
-    const response = await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
+    test('blogs are returned as JSON', async () => {
+      const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
 
-    assert.strictEqual(response.body.length, listHelper.initialBlogs.length)
-  })
+      assert.strictEqual(response.body.length, listHelper.initialBlogs.length)
+    })
 
-  test('returned unique identifier property is id', async () => {
-    const response = await api
-      .get('/api/blogs')
-      .expect(200)
-      .expect('Content-Type', /application\/json/)
+    test('returned unique identifier property is id', async () => {
+      const response = await api
+        .get('/api/blogs')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
 
-    response.body.forEach(blog => {
-      assert.strictEqual(Object.keys(blog).includes('id'), true)
+      response.body.forEach(blog => {
+        assert.strictEqual(Object.keys(blog).includes('id'), true)
+      })
     })
   })
+
   describe('adding new blog', async () => {
-    test('New Blog adding succeeds', async () => {
+    test('new blog adding succeeds', async () => {
       const newBlog = { ...listHelper.singleBlog }
 
       const response = await api
@@ -93,55 +95,55 @@ describe('API tests', async () => {
     })
   })
 
-  describe('delete single blog', async () => {
-    test('success with status 204 if blog deleted', async () => {
-      const newBlog = { ...listHelper.singleBlog }
-
-      const blog = new Blog(newBlog)
-      const savedBlog = await blog.save()
-
-      await api
-        .delete(`/api/blogs/${savedBlog.id}`)
-        .expect(204)
+  describe('for single blog init', async () => {
+    beforeEach(async () => {
+      await Blog.deleteMany({})
     })
 
-    test('fails if id is not valid', async () => {
-      const newBlog = { ...listHelper.singleBlog }
+    describe('delete single blog', async () => {
+      test('success with status 204 if blog deleted', async () => {
+        const savedBlog = await listHelper.initSingleBlog()
+        await api
+          .delete(`/api/blogs/${savedBlog.id}`)
+          .expect(204)
+      })
 
-      const blog = new Blog(newBlog)
-      const savedBlog = await blog.save()
+      test('fails if id is not valid', async () => {
+        const savedBlog = await listHelper.initSingleBlog()
 
-      await Blog.findByIdAndDelete(savedBlog.id)
+        await Blog.findByIdAndDelete(savedBlog.id)
 
-      await api
-        .delete(`/api/blogs/${savedBlog.id}`)
-        .expect(404)
-
-    })
-  })
-  describe('edit blog', async () => {
-    test('success increase likes by 1', async () => {
-      const savedBlog = await listHelper.initSingleBlog()
-      let { title, author, url, likes } = savedBlog
-
-      await api
-        .put(`/api/blogs/${savedBlog.id}`)
-        .send({ title, author, url, likes: likes += 1 })
-        .expect(201)
-        .expect('Content-Type', /application\/json/)
-
-      const editedBlog = await Blog.findById(savedBlog.id)
-      assert.strictEqual(editedBlog.likes, savedBlog.likes + 1)
+        await api
+          .delete(`/api/blogs/${savedBlog.id}`)
+          .expect(404)
+      })
     })
 
-    test('failing if likes is undefined', async () => {
-      const savedBlog = await listHelper.initSingleBlog()
-      delete savedBlog.likes
+    describe('edit blog', async () => {
+      test('success increase likes by 1', async () => {
+        const savedBlog = await listHelper.initSingleBlog()
+        let { title, author, url, likes } = savedBlog
 
-      await api
-        .put(`/api/blogs/${savedBlog.id}`)
-        .send(savedBlog)
-        .expect(400)
+        await api
+          .put(`/api/blogs/${savedBlog.id}`)
+          .send({ title, author, url, likes: likes += 1 })
+          .expect(201)
+          .expect('Content-Type', /application\/json/)
+
+        const editedBlog = await Blog.findById(savedBlog.id)
+        assert.strictEqual(editedBlog.likes, savedBlog.likes + 1)
+      })
+
+      test('failing if likes is undefined', async () => {
+        const savedBlog = await listHelper.initSingleBlog()
+        delete savedBlog.likes
+
+        const editedBlog = await api
+          .put(`/api/blogs/${savedBlog.id}`)
+          .send(savedBlog)
+          .expect(400)
+          
+      })
     })
   })
 

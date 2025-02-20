@@ -80,7 +80,6 @@ const initSingleBlog = async () => {
   const blog = new Blog(newBlog)
 
   const savedBlog = await blog.save()
-  
   return {
     id: savedBlog.id,
     title: savedBlog.title,
