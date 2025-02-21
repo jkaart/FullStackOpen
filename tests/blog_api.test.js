@@ -8,7 +8,7 @@ const listHelper = require('../utils/list_helper')
 
 const api = supertest(app)
 
-describe('API tests', async () => {
+describe('blog api tests', async () => {
   describe('for multiple blog init', async () => {
     beforeEach(async () => {
       await Blog.deleteMany({})
@@ -142,7 +142,7 @@ describe('API tests', async () => {
           .put(`/api/blogs/${savedBlog.id}`)
           .send(savedBlog)
           .expect(400)
-          
+
       })
     })
   })
