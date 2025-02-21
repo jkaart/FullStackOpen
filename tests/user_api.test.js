@@ -30,6 +30,22 @@ describe('user api tests', async () => {
   })
 
   test('list all users', async () => {
+    const initialUsers = listHelper.initialUsers()
+    console.log('initial', initialUsers)
+    for (const user of initialUsers) {
+      console.log('user', user)
+      const saltRounds = 10
+      const passwordHash = await bcrypt.hash(user.password, saltRounds)
+
+      const userToDb = new User({
+        username: user.username,
+        name: user.name,
+        passwordHash
+      })
+
+      await userToDb.save()
+    }
+
     const usersInDb = await User.find({})
     const response = await api
       .get('/api/users')

@@ -1,5 +1,8 @@
 const _ = require('lodash')
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const initialBlogs = [
   {
@@ -40,27 +43,34 @@ const initialBlogs = [
   }
 ]
 
-const initialUsers = [
-  {
-    username: 'test',
-    name: 'testi testaaja',
-    password: 'salasana'
-  },
-  {
-    username: 'seppo',
-    name: 'Seppo Testaaja',
-    password: 'ssana'
-  },
-  {
-    username: 'aankka',
-    name: 'Aku Ankka',
-    password: 'salaankka'
-  }
-]
+const initialUsers = () => {
+  return [
+    {
+      username: 'test',
+      name: 'testi testaaja',
+      password: 'salasana'
+    },
+    {
+      username: 'seppo',
+      name: 'Seppo Testaaja',
+      password: 'ssana'
+    },
+    {
+      username: 'aankka',
+      name: 'Aku Ankka',
+      password: 'salaankka'
+    }
+  ]
+}
 
-const singleBlog = { ...initialBlogs[0] }
+const singleBlog = {
+  title: 'Test blog',
+  author: 'Blog Tester',
+  url: 'http://blog.test.com',
+  likes: 2,
+}
 
-const singleUser = { ...initialUsers[0] }
+const singleUser = initialUsers()[0]
 
 const dummy = (blogs) => {
   return 1
@@ -95,18 +105,68 @@ const mostLikes = (blogs) => {
   return { author, likes: likesSum[author] }
 }
 
-const initSingleBlog = async () => {
+const initUser = async () => {
+  const saltRounds = 10
+  const passwordHash = await bcrypt.hash('tokentest', saltRounds)
+  const user = new User({
+    username: 'tokenTest',
+    name: 'Test User',
+    passwordHash
+  })
+  const savedUser = await user.save()
+
+  return {
+    id: savedUser.id,
+    name: savedUser.name,
+    username: savedUser.username,
+  }
+}
+
+const initSingleBlog = async (user) => {
   const newBlog = { ...singleBlog }
   const blog = new Blog(newBlog)
-
+  blog.user = user.id
   const savedBlog = await blog.save()
+
   return {
     id: savedBlog.id,
     title: savedBlog.title,
     author: savedBlog.author,
     url: savedBlog.url,
-    likes: savedBlog.likes
+    likes: savedBlog.likes,
+    user: savedBlog.user
   }
+}
+
+const userLogin = async (userid) => {
+  const user = await User.findById(userid)
+  if (!user) {
+    return null
+  }
+
+  const userForToken = {
+    username: user.username,
+    id: user._id,
+  }
+
+  const token = jwt.sign(userForToken, process.env.SECRET)
+
+  return token
+}
+
+const initUserLogin = async () => {
+  const user = await initUser()
+  const token = await userLogin(user.id)
+
+  return { user, token }
+}
+
+const initUserBlogLogin = async () => {
+  const user = await initUser()
+  const savedBlog = await initSingleBlog(user)
+  const token = await userLogin(user.id)
+
+  return { user, blog: savedBlog, token }
 }
 
 module.exports = {
@@ -120,4 +180,8 @@ module.exports = {
   initSingleBlog,
   initialUsers,
   singleUser,
+  initUser,
+  userLogin,
+  initUserLogin,
+  initUserBlogLogin,
 }
