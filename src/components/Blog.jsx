@@ -1,7 +1,37 @@
-const Blog = ({ blog }) => (
-  <div>
-    {blog.title} {blog.author}
-  </div>  
-)
+import { useState } from 'react'
+import RemoveBlogBtn from './RemoveBlogBtn'
+
+const Blog = ({ blog, username, editBlog, removeBlog }) => {
+  const [visible, setVisible] = useState(false)
+
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5
+  }
+
+  const showMoreInfo = () => {
+    setVisible(visible ? false : true)
+  }
+
+  if (!visible) {
+    return (
+      <div style={blogStyle}>
+        {blog.title} {blog.author} <button onClick={showMoreInfo}>view</button>
+      </div>
+    )
+  }
+  return (
+    <div style={blogStyle}>
+      {blog.title} {blog.author} <button onClick={showMoreInfo}>hide</button><br />
+      {blog.url}<br />
+      likes {blog.likes} <button onClick={() => editBlog({ ...blog, likes: blog.likes + 1 })} >like</button><br />
+      {blog.user.name}<br />
+      <RemoveBlogBtn loggedUser={username} blogUser={blog.user.username} onClick={() => removeBlog(blog)} />
+    </div>
+  )
+}
 
 export default Blog
