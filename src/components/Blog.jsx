@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import PropTypes from 'prop-types'
 import RemoveBlogBtn from './RemoveBlogBtn'
 
 const Blog = ({ blog, username, editBlog, removeBlog }) => {
@@ -32,6 +33,13 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
       <RemoveBlogBtn loggedUser={username} blogUser={blog.user.username} onClick={() => removeBlog(blog)} />
     </div>
   )
+}
+
+Blog.propTypes = {
+  blog: PropTypes.object.isRequired,
+  username: PropTypes.string.isRequired,
+  editBlog: PropTypes.func.isRequired,
+  removeBlog: PropTypes.func.isRequired,
 }
 
 export default Blog

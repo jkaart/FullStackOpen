@@ -5,12 +5,12 @@ import loginService from './services/login'
 import BlogForm from './components/BlogForm'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
+import LoginForm from './components/LoginForm'
+import Header from './components/Header'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null)
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
 
   const [notificationMessage, setNotificationMessage] = useState(null)
   const [notificationType, setNotificationType] = useState(null)
@@ -26,22 +26,15 @@ const App = () => {
     }, 5000)
   }
 
-  const handleUsernameChange = (event) => setUsername(event.target.value)
-  const handlePasswordChange = (event) => setPassword(event.target.value)
-
-  const handleLogin = async (event) => {
-    event.preventDefault()
-    console.log('Login event')
+  const handleLogin = async (loginObject) => {
     try {
-      const user = await loginService.login({ username, password })
+      const user = await loginService.login(loginObject)
       window.localStorage.setItem(
         'loggedBlogsUser', JSON.stringify(user)
       )
       blogService.setToken(user.token)
       setUser(user)
       showNotification({ message: `User '${user.username}' logged in successfully`, type: 'info' })
-      setUsername('')
-      setPassword('')
     }
     catch (error) {
       showNotification({ message: `${error.response.data.error}`, type: 'error' })
@@ -50,7 +43,6 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    console.log('Logout event')
     window.localStorage.removeItem('loggedBlogsUser')
     showNotification({ message: `User '${user.username}' logged out successfully`, type: 'info' })
     setUser(null)
@@ -86,7 +78,7 @@ const App = () => {
       const id = blog.id
       const confirm = window.confirm(`Remove blog ${blog.title} by ${blog.author}`)
       if (confirm) {
-        const response = await blogService.remove(id)
+        await blogService.remove(id)
         setBlogs(blogs.filter(blog => blog.id !== id))
         showNotification({ message: `Blog ${blog.title} by ${blog.author} removed successfully`, type: 'info' })
       }
@@ -114,19 +106,15 @@ const App = () => {
   if (user === null) {
     return (
       <div>
-        <h2>Log in to application</h2>
+        <Header text={'Log in to application'} />
         <Notification message={notificationMessage} type={notificationType} />
-        <form onSubmit={handleLogin}>
-          username <input value={username} onChange={handleUsernameChange} /><br />
-          password <input value={password} onChange={handlePasswordChange} type='password' /><br />
-          <button type="submit">Login</button>
-        </form>
+        <LoginForm login={handleLogin} />
       </div>
     )
   }
   return (
     <div>
-      <h2>blogs</h2>
+      <Header text={'Blogs'} />
       <Notification message={notificationMessage} type={notificationType} />
       {user.name} logged in <button onClick={handleLogout}>Logout</button><br />
       <Togglable buttonLabel='create new blog' ref={blogFormRef}>
