@@ -19,13 +19,13 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
 
   if (!visible) {
     return (
-      <div style={blogStyle}>
+      <div style={blogStyle} className='blog'>
         {blog.title} {blog.author} <button onClick={showMoreInfo} data-testId='view'>view</button>
       </div>
     )
   }
   return (
-    <div style={blogStyle}>
+    <div style={blogStyle} className='blog'>
       {blog.title} {blog.author} <button onClick={showMoreInfo}>hide</button><br />
       {blog.url}<br />
       likes {blog.likes} <button data-testId='like' onClick={() => editBlog({ ...blog, likes: blog.likes + 1 })} >like</button><br />
