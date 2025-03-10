@@ -105,6 +105,71 @@ describe('Blog app', () => {
         const infoDiv = await page.locator('.info')
         await expect(infoDiv).toContainText('Blog Go To Statement Considered Harmful by Edsger W. Dijkstra removed successfully')
       })
+
+      test('only blog creator can see remove button', async ({ page, request }) => {
+        await request.post('/api/users', {
+          data: {
+            name: 'Test User',
+            username: 'test',
+            password: 'salainen'
+          }
+        })
+        await page.getByRole('button', { name: 'Logout' }).click()
+        await page.getByTestId('username').fill('test')
+        await page.getByTestId('password').fill('salainen')
+        await page.getByRole('button', { name: 'Login' }).click()
+
+        await page.getByRole('button', { name: 'view' }).click()
+        await expect(page.getByRole('button', { name: 'remove' })).toHaveCount(0)
+      })
+    })
+    
+    test('blogs sorted by likes', async ({ page }) => {
+      const blogs = [
+        {
+          title: 'React patterns',
+          author: 'Michael Chan',
+          url: 'https://reactpatterns.com/',
+          likes: 5,
+        },
+        {
+          title: 'Go To Statement Considered Harmful',
+          author: 'Edsger W. Dijkstra',
+          url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+          likes: 6,
+        },
+        {
+          title: 'Canonical string reduction',
+          author: 'Edsger W. Dijkstra',
+          url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+          likes: 8,
+        },
+      ]
+
+      for (const blog of blogs) {
+        await page.getByRole('button', { name: 'create new blog' }).click()
+        await page.getByPlaceholder('write blog title').fill(blog.title)
+        await page.getByPlaceholder('write blog author').fill(blog.author)
+        await page.getByPlaceholder('write blog url').fill(blog.url)
+
+        await page.getByRole('button', { name: 'create' }).click()
+        const createdBlog = await page.getByText(blog.title)
+        await createdBlog.getByRole('button', { name: 'view' }).click()
+
+        for (let counter = 1; counter < blog.likes + 1; counter++) {
+          await page.getByRole('button', { name: 'like' }).click()
+          await page.getByText(`likes ${counter}`).waitFor()
+        }
+        await page.getByRole('button', { name: 'hide' }).click()
+      }
+
+      await page.getByRole('button', { name: 'view' }).first().click()
+      await page.getByRole('button', { name: 'view' }).last().click()
+      const firstBlog = await page.locator('.blog').first()
+      const lastBlog = await page.locator('.blog').last()
+
+      await expect(firstBlog).toContainText(`likes ${blogs[blogs.length - 1].likes}`)
+      await expect(lastBlog).toContainText(`likes ${blogs[0].likes}`)
     })
   })
 })
