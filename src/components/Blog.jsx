@@ -26,10 +26,10 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
   }
   return (
     <div style={blogStyle} className='blog'>
-      {blog.title} {blog.author} <button onClick={showMoreInfo}>hide</button><br />
-      {blog.url}<br />
-      likes {blog.likes} <button data-testid='like' onClick={() => editBlog({ ...blog, likes: blog.likes + 1 })} >like</button><br />
-      {blog.user.name}<br />
+      <span>{blog.title} {blog.author}</span> <button onClick={showMoreInfo}>hide</button><br />
+      <span>{blog.url}</span><br />
+      <span>likes {blog.likes}</span><button data-testid='like' onClick={() => editBlog({ ...blog, likes: blog.likes + 1 })} >like</button><br />
+      <span>{blog.user.name}</span><br />
       <RemoveBlogBtn loggedUser={username} blogUser={blog.user.username} onClick={() => removeBlog(blog)} />
     </div>
   )
