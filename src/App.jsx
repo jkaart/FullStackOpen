@@ -7,24 +7,16 @@ import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import LoginForm from './components/LoginForm'
 import Header from './components/Header'
+import { useDispatch } from 'react-redux'
+import { setNotification } from './reducers/notificationReducer'
 
 const App = () => {
 	const [blogs, setBlogs] = useState([])
 	const [user, setUser] = useState(null)
 
-	const [notificationMessage, setNotificationMessage] = useState(null)
-	const [notificationType, setNotificationType] = useState(null)
+	const dispatch = useDispatch()
 
 	const blogFormRef = useRef()
-
-	const showNotification = ({ message, type }) => {
-		setNotificationMessage(message)
-		setNotificationType(type)
-		setTimeout(() => {
-			setNotificationMessage(null)
-			setNotificationType(null)
-		}, 5000)
-	}
 
 	const handleLogin = async loginObject => {
 		try {
@@ -32,25 +24,16 @@ const App = () => {
 			window.localStorage.setItem('loggedBlogsUser', JSON.stringify(user))
 			blogService.setToken(user.token)
 			setUser(user)
-			showNotification({
-				message: `User '${user.username}' logged in successfully`,
-				type: 'info',
-			})
+			dispatch(setNotification(`User '${user.username}' logged in successfully`, 'info'))
 		} catch (error) {
-			showNotification({
-				message: `${error.response.data.error}`,
-				type: 'error',
-			})
+			dispatch(setNotification(`${error.response.data.error}`, 'error'))
 			console.log(error.response.data.error)
 		}
 	}
 
 	const handleLogout = () => {
 		window.localStorage.removeItem('loggedBlogsUser')
-		showNotification({
-			message: `User '${user.username}' logged out successfully`,
-			type: 'info',
-		})
+		dispatch(setNotification(`User '${user.username}' logged out successfully`, 'info'))
 		setUser(null)
 	}
 
@@ -59,14 +42,10 @@ const App = () => {
 			blogFormRef.current.toggleVisibility()
 			const createdBlog = await blogService.create(blogObject)
 			setBlogs(blogs.concat(createdBlog))
-
-			showNotification({
-				message: `a new blog '${createdBlog.title}' added`,
-				type: 'info',
-			})
+			dispatch(setNotification(`a new blog '${createdBlog.title}' added`, 'info'))
 		} catch (error) {
 			if (error.response.status === 400) {
-				showNotification({ message: 'title and/or url missing', type: 'error' })
+				dispatch(setNotification('title and/or url missing', 'error'))
 			}
 			console.log('error', error)
 		}
@@ -90,10 +69,7 @@ const App = () => {
 			if (confirm) {
 				await blogService.remove(id)
 				setBlogs(blogs.filter(blog => blog.id !== id))
-				showNotification({
-					message: `Blog ${blog.title} by ${blog.author} removed successfully`,
-					type: 'info',
-				})
+				dispatch(setNotification(`Blog ${blog.title} by ${blog.author} removed successfully`, 'info'))
 			}
 		} catch (error) {
 			console.log(error)
@@ -119,7 +95,7 @@ const App = () => {
 		return (
 			<div>
 				<Header text={'Log in to application'} />
-				<Notification message={notificationMessage} type={notificationType} />
+				<Notification />
 				<LoginForm login={handleLogin} />
 			</div>
 		)
@@ -127,7 +103,7 @@ const App = () => {
 	return (
 		<div>
 			<Header text={'Blogs'} />
-			<Notification message={notificationMessage} type={notificationType} />
+			<Notification />
 			{user.name} logged in <button onClick={handleLogout}>Logout</button>
 			<br />
 			<Togglable buttonLabel='create new blog' ref={blogFormRef}>
