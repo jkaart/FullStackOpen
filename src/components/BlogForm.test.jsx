@@ -17,16 +17,16 @@ test('<BlogForm /> updates parent state and calls onSubmit', async () => {
 	await user.type(authorInput, 'Edsger W. Dijkstra')
 	await user.type(
 		urlInput,
-		'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+		'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html'
 	)
 	await user.click(createButton)
 
 	expect(createBlog.mock.calls).toHaveLength(1)
 	expect(createBlog.mock.calls[0][0].title).toBe(
-		'Go To Statement Considered Harmful',
+		'Go To Statement Considered Harmful'
 	)
 	expect(createBlog.mock.calls[0][0].author).toBe('Edsger W. Dijkstra')
 	expect(createBlog.mock.calls[0][0].url).toBe(
-		'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+		'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html'
 	)
 })

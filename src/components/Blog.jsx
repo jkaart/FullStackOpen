@@ -1,8 +1,12 @@
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
 import PropTypes from 'prop-types'
 import RemoveBlogBtn from './RemoveBlogBtn'
+import { editBlog, deleteBlog } from '../reducers/blogReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
-const Blog = ({ blog, username, editBlog, removeBlog }) => {
+const Blog = ({ blog }) => {
+	const dispatch = useDispatch()
 	const [visible, setVisible] = useState(false)
 
 	const blogStyle = {
@@ -10,7 +14,26 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
 		paddingLeft: 2,
 		border: 'solid',
 		borderWidth: 1,
-		marginBottom: 5,
+		marginBottom: 5
+	}
+
+	const removeBlog = async blog => {
+		try {
+			const confirm = window.confirm(
+				`Remove blog ${blog.title} by ${blog.author}`
+			)
+			if (confirm) {
+				dispatch(deleteBlog(blog))
+				dispatch(
+					setNotification(
+						`Blog ${blog.title} by ${blog.author} removed successfully`,
+						'info'
+					)
+				)
+			}
+		} catch (error) {
+			console.log(error)
+		}
 	}
 
 	const showMoreInfo = () => {
@@ -20,7 +43,7 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
 	if (!visible) {
 		return (
 			<div style={blogStyle} className='blog'>
-				{blog.title} {blog.author}{' '}
+				{blog.title} {blog.author}
 				<button onClick={showMoreInfo} data-testid='view'>
 					view
 				</button>
@@ -31,23 +54,19 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
 		<div style={blogStyle} className='blog'>
 			<span>
 				{blog.title} {blog.author}
-			</span>{' '}
+			</span>
 			<button onClick={showMoreInfo}>hide</button>
 			<br />
 			<span>{blog.url}</span>
 			<br />
 			<span>likes {blog.likes}</span>
-			<button
-				data-testid='like'
-				onClick={() => editBlog({ ...blog, likes: blog.likes + 1 })}
-			>
+			<button data-testid='like' onClick={() => dispatch(editBlog(blog))}>
 				like
 			</button>
 			<br />
 			<span>{blog.user.name}</span>
 			<br />
 			<RemoveBlogBtn
-				loggedUser={username}
 				blogUser={blog.user.username}
 				onClick={() => removeBlog(blog)}
 			/>
@@ -56,10 +75,7 @@ const Blog = ({ blog, username, editBlog, removeBlog }) => {
 }
 
 Blog.propTypes = {
-	blog: PropTypes.object.isRequired,
-	username: PropTypes.string.isRequired,
-	editBlog: PropTypes.func.isRequired,
-	removeBlog: PropTypes.func.isRequired,
+	blog: PropTypes.object.isRequired
 }
 
 export default Blog

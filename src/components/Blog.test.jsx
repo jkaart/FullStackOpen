@@ -9,12 +9,12 @@ test('renders blog title', () => {
 		title: 'Go To Statement Considered Harmful',
 		author: 'Edsger W. Dijkstra',
 		url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-		likes: 5,
+		likes: 5
 	}
 	render(<Blog blog={blog} />)
 
 	const element = screen.getByText('Go To Statement Considered Harmful', {
-		exact: false,
+		exact: false
 	})
 
 	expect(element).toBeDefined()
@@ -31,8 +31,8 @@ describe('user click event', () => {
 			likes: 5,
 			user: {
 				username: 'jaska',
-				name: 'Jaska Jokunen',
-			},
+				name: 'Jaska Jokunen'
+			}
 		}
 		user = userEvent.setup()
 	})
@@ -45,7 +45,7 @@ describe('user click event', () => {
 
 		const blogUrl = screen.getByText(
 			'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
-			{ exact: false },
+			{ exact: false }
 		)
 
 		const blogLikes = screen.getByText(5, { exact: false })

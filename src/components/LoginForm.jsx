@@ -1,7 +1,10 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
+import { useDispatch } from 'react-redux'
+import { logIn } from '../reducers/userReducer'
+import { setNotification } from '../reducers/notificationReducer'
 
-const LoginForm = ({ login }) => {
+const LoginForm = () => {
+	const dispatch = useDispatch()
 	const [username, setUsername] = useState('')
 	const [password, setPassword] = useState('')
 
@@ -9,11 +12,13 @@ const LoginForm = ({ login }) => {
 	const handlePasswordChange = event => setPassword(event.target.value)
 
 	const handleLogin = event => {
-		event.preventDefault()
-		login({
-			username,
-			password,
-		})
+		try {
+			event.preventDefault()
+			dispatch(logIn({ username, password }))
+		} catch (error) {
+			console.log(error)
+			dispatch(setNotification(`${error.response.data.error}`, 'error'))
+		}
 
 		setUsername('')
 		setPassword('')
@@ -21,14 +26,14 @@ const LoginForm = ({ login }) => {
 
 	return (
 		<form onSubmit={handleLogin}>
-			username{' '}
+			username
 			<input
 				value={username}
 				data-testid='username'
 				onChange={handleUsernameChange}
 			/>
 			<br />
-			password{' '}
+			password
 			<input
 				value={password}
 				data-testid='password'
@@ -39,10 +44,6 @@ const LoginForm = ({ login }) => {
 			<button type='submit'>Login</button>
 		</form>
 	)
-}
-
-LoginForm.propTypes = {
-	login: PropTypes.func.isRequired,
 }
 
 export default LoginForm
