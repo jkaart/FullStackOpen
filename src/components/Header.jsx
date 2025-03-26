@@ -1,9 +1,26 @@
-import PropTypes from 'prop-types'
+import { useSelector } from 'react-redux'
 
-const Header = ({ text }) => <h2>{text}</h2>
+import LogoutBtn from './LogoutBtn'
+import Heading from './Heading'
 
-Header.propTypes = {
-	text: PropTypes.string.isRequired
+const Header = () => {
+	const user = useSelector(state => state.user)
+
+	if (!user.logged) {
+		return (
+			<div>
+				<Heading text='Log in to application' />
+			</div>
+		)
+	}
+	return (
+		<div>
+			<Heading text='Blogs' />
+			<span>
+				{user.name} logged in <LogoutBtn />
+			</span>
+		</div>
+	)
 }
 
 export default Header

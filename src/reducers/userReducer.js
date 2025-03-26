@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import userService from '../services/login'
-import { setNotification } from '../reducers/notificationReducer'
+import { setNotification } from './notificationReducer'
 import blogService from '../services/blogs'
 
 const initialState = {
