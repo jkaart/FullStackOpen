@@ -79,7 +79,7 @@ blogsRouter.put('/:id', async (request, response) => {
 blogsRouter.post('/:id/comments', async (request, response) => {
   const { comment } = request.body
   const id = request.params.id
-  const blog = await Blog.findById(id)
+  const blog = await Blog.findById(id).populate('user', { username: 1, name: 1 })
 
   if (!blog) {
     return response.status(404).end()
