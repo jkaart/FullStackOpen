@@ -1,7 +1,7 @@
 import React from 'react'
 import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import Blog from './Blog'
+import Blog from './BlogPage'
 import { beforeEach, describe, expect } from 'vitest'
 
 test('renders blog title', () => {

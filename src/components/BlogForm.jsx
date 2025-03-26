@@ -19,9 +19,9 @@ const BlogForm = () => {
 	const blogFormRef = useRef()
 
 	const addBlog = async event => {
-		blogFormRef.current.toggleVisibility()
 		try {
 			event.preventDefault()
+			blogFormRef.current.toggleVisibility()
 			const blogObject = {
 				title: newTitle,
 				author: newAuthor,

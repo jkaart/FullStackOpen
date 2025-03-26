@@ -1,14 +1,24 @@
 import { useDispatch, useSelector } from 'react-redux'
-import Blog from './Blog'
+import Blog from './BlogPage'
+import { Link } from 'react-router-dom'
+
 const Blogs = () => {
-	const blogs = useSelector(({ blogs }) => {
-		return blogs
-	})
+	const blogs = useSelector(state => state.blogs)
+
+	const blogStyle = {
+		paddingTop: 10,
+		paddingLeft: 2,
+		border: 'solid',
+		borderWidth: 1,
+		marginBottom: 5
+	}
 
 	return (
 		<div>
 			{blogs.map(blog => (
-				<Blog key={blog.id} blog={blog} />
+				<div key={blog.id} style={blogStyle}>
+					<Link to={`/blogs/${blog.id}`}>{`${blog.title} ${blog.author}`}</Link>
+				</div>
 			))}
 		</div>
 	)

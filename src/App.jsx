@@ -1,33 +1,28 @@
 import { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import {
-	BrowserRouter as Router,
-	Routes, Route, Link
-} from 'react-router-dom'
+import { Routes, Route, Link, useMatch } from 'react-router-dom'
 
 import { initializeBlogs } from './reducers/blogReducer'
-import { initializeUsers } from './reducers/usersReducer'
 import { setUser } from './reducers/userReducer'
+
+import LogoutBtn from './components/LogoutBtn'
 
 import BlogsPage from './components/BlogsPage'
 import LoginPage from './components/LoginPage'
 import UsersPage from './components/UsersPage'
 import UserPage from './components/UserPage'
+import BlogPage from './components/BlogPage'
 
 import Notification from './components/Notification'
 
 import Header from './components/Header'
 
 const App = () => {
-	const user = useSelector(state => state.user)
+	const blogs = useSelector(state => state.blogs)
 	const dispatch = useDispatch()
 
 	useEffect(() => {
 		dispatch(initializeBlogs())
-	}, [dispatch])
-
-	useEffect(() => {
-		dispatch(initializeUsers())
 	}, [dispatch])
 
 	useEffect(() => {
@@ -38,38 +33,40 @@ const App = () => {
 		}
 	}, [])
 
+	const match = useMatch('/blogs/:id')
+	const blog = match ? blogs.find(blog => blog.id === match.params.id) : null
+
+	const padding = {
+		padding: 5
+	}
+
 	return (
-		<>
+		<div>
 			<Header />
 			<Notification />
-			<Router>
-				<Routes>
-					<Route path='/' element={user.logged ? <BlogsPage /> : <LoginPage />} />
-					<Route path='/users' element={<UsersPage />} />
-					<Route path='/users/:id' element={<UserPage />} />
-				</Routes>
-			</Router>
-		</>
+			<div>
+				{user.logged ? (
+					<>
+						<Link style={padding} to='/'>
+							Blogs
+						</Link>
+						<Link style={padding} to='/users'>
+							Users
+						</Link>
+						<span>
+							{user.name} logged in <LogoutBtn />
+						</span>
+					</>
+				) : null}
+			</div>
+			<Routes>
+				<Route path='/' element={user.logged ? <BlogsPage /> : <LoginPage />} />
+				<Route path='/users' element={<UsersPage />} />
+				<Route path='/users/:id' element={<UserPage />} />
+				<Route path='/blogs/:id' element={<BlogPage blog={blog} />} />
+			</Routes>
+		</div>
 	)
-
-	// if (!user.logged) {
-	// 	return (
-	// 		<>
-	// 			<LoginPage />
-	// 		</>
-	// 	)
-	// }
-	// return (
-	// 	<div>
-	// 		<BlogsPage />
-	// 		{/* <Header text={'Blogs'} />
-	// 		<Notification />
-	// 		{user.name} logged in <button onClick={handleLogout}>Logout</button>
-	// 		<br />
-	// 		<BlogForm />
-	// 		<Blogs /> */}
-	// 	</div>
-	// )
 }
 
 export default App
