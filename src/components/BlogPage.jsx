@@ -43,7 +43,7 @@ const Blog = ({ blog }) => {
 				<a href={blog.url}>{blog.url}</a>
 			</div>
 			<div>likes {blog.likes}</div>
-			<div>{blog.user.name}</div>
+			<div>added by {blog.user.name}</div>
 			<Button
 				sx={{ marginRight: 1, marginTop: 1 }}
 				variant='contained'
