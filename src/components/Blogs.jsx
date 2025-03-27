@@ -1,26 +1,19 @@
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './BlogPage'
 import { Link } from 'react-router-dom'
+import { List, ListItemButton, ListItemText } from '@mui/material'
 
 const Blogs = () => {
 	const blogs = useSelector(state => state.blogs)
 
-	const blogStyle = {
-		paddingTop: 10,
-		paddingLeft: 2,
-		border: 'solid',
-		borderWidth: 1,
-		marginBottom: 5
-	}
-
 	return (
-		<div>
+		<List>
 			{blogs.map(blog => (
-				<div key={blog.id} style={blogStyle}>
-					<Link to={`/blogs/${blog.id}`}>{`${blog.title} ${blog.author}`}</Link>
-				</div>
+				<ListItemButton disableGutters key={blog.id} to={`/blogs/${blog.id}`}>
+					<ListItemText primary={`${blog.title} ${blog.author}`} />
+				</ListItemButton>
 			))}
-		</div>
+		</List>
 	)
 }
 

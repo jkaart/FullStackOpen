@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from 'react-redux'
 import { logOut } from '../reducers/userReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Button } from '@mui/material'
 
 const LogoutBtn = () => {
 	const dispatch = useDispatch()
@@ -13,7 +14,16 @@ const LogoutBtn = () => {
 		)
 	}
 
-	return <button onClick={handleLogout}>Logout</button>
+	return (
+		<Button
+			variant='contained'
+			size='small'
+			color='secondary'
+			onClick={handleLogout}
+		>
+			Logout
+		</Button>
+	)
 }
 
 export default LogoutBtn

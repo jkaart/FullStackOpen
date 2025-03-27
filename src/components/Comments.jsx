@@ -2,6 +2,8 @@ import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
 import { commentBlog } from '../reducers/blogReducer'
 import { useState } from 'react'
+import { Button, List, ListItem, ListItemText, TextField } from '@mui/material'
+import SendIcon from '@mui/icons-material/Send'
 
 const Comments = ({ blog }) => {
 	const dispatch = useDispatch()
@@ -23,14 +25,28 @@ const Comments = ({ blog }) => {
 		<div>
 			<h3>Comments</h3>
 			<form onSubmit={addNewComment}>
-				<input value={comment} onChange={handleNewComment} />
-				<button type='submit'>Add comment</button>
+				<TextField
+					size='small'
+					sx={{ marginRight: 1 }}
+					value={comment}
+					onChange={handleNewComment}
+				/>
+				<Button variant='contained' type='submit' startIcon={<SendIcon />}>
+					Add comment
+				</Button>
 			</form>
-			<ul>
-				{blog.comments.map((comment, index) => (
-					<li key={index}>{comment}</li>
-				))}
-			</ul>
+			{blog.comments.length === 0 ? (
+				<span>No comments</span>
+			) : (
+				<List>
+					{' '}
+					{blog.comments.map((comment, index) => (
+						<ListItem key={index}>
+							<ListItemText>{comment}</ListItemText>
+						</ListItem>
+					))}
+				</List>
+			)}
 		</div>
 	)
 }

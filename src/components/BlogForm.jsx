@@ -4,6 +4,7 @@ import Togglable from './Togglable'
 import blogService from '../services/blogs'
 import { createBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
+import { Button, Grid, TextField } from '@mui/material'
 
 const BlogForm = () => {
 	const token = useSelector(state => state.user.token)
@@ -44,33 +45,49 @@ const BlogForm = () => {
 		}
 	}
 	return (
-		<Togglable buttonLabel='create new blog' ref={blogFormRef}>
-			<h2>create new</h2>
-			<form onSubmit={addBlog}>
-				title
-				<input
-					value={newTitle}
-					placeholder='write blog title'
-					onChange={handleNewTitle}
-				/>
-				<br />
-				author
-				<input
-					value={newAuthor}
-					placeholder='write blog author'
-					onChange={handleNewAuthor}
-				/>
-				<br />
-				url
-				<input
-					value={newUrl}
-					placeholder='write blog url'
-					onChange={handleNewUrl}
-				/>
-				<br />
-				<button type='submit'>create</button>
-			</form>
-		</Togglable>
+		<>
+			<Grid container direction={'column'}>
+				<Togglable buttonLabel='create new blog' ref={blogFormRef}>
+					<Grid>
+						<h3>create new</h3>
+					</Grid>
+					<form onSubmit={addBlog}>
+						<Grid sx={{ py: 1 }}>
+							<TextField
+								label='title'
+								value={newTitle}
+								placeholder='write blog title'
+								onChange={handleNewTitle}
+								size='small'
+							/>
+						</Grid>
+						<Grid sx={{ py: 1 }}>
+							<TextField
+								label='author'
+								value={newAuthor}
+								placeholder='write blog author'
+								onChange={handleNewAuthor}
+								size='small'
+							/>
+						</Grid>
+						<Grid sx={{ py: 1 }}>
+							<TextField
+								label='url'
+								placeholder='write blog url'
+								value={newUrl}
+								onChange={handleNewUrl}
+								size='small'
+							/>
+						</Grid>
+						<Grid sx={{ py: 1 }}>
+							<Button variant='contained' type='submit'>
+								create
+							</Button>
+						</Grid>
+					</form>
+				</Togglable>
+			</Grid>
+		</>
 	)
 }
 

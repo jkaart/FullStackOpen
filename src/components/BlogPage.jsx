@@ -6,6 +6,8 @@ import { setNotification } from '../reducers/notificationReducer'
 import RemoveBlogBtn from './RemoveBlogBtn'
 import Comments from './Comments'
 import Heading from './Heading'
+import { Box, Button, Grid, Stack } from '@mui/material'
+import LikeIcon from '@mui/icons-material/ThumbUp'
 
 const Blog = ({ blog }) => {
 	const dispatch = useDispatch()
@@ -41,10 +43,16 @@ const Blog = ({ blog }) => {
 				<a href={blog.url}>{blog.url}</a>
 			</div>
 			<div>likes {blog.likes}</div>
-			<button data-testid='like' onClick={() => dispatch(editBlog(blog))}>
-				like
-			</button>
 			<div>{blog.user.name}</div>
+			<Button
+				sx={{ marginRight: 1, marginTop: 1 }}
+				variant='contained'
+				data-testid='like'
+				startIcon={<LikeIcon />}
+				onClick={() => dispatch(editBlog(blog))}
+			>
+				like
+			</Button>
 			<RemoveBlogBtn
 				blogUser={blog.user.username}
 				onClick={() => removeBlog(blog)}
